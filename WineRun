@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Load the dataset from the UCI Machine Learning Repository
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
+dataset = pd.read_csv(url, delimiter=';')
+
+# Data exploration
+print(dataset.head())
+print(dataset.describe())
+print(dataset.info())
+
+# Visualize feature correlations
+plt.figure(figsize=(12, 8))
+sns.heatmap(dataset.corr(), annot=True, cmap='coolwarm')
+plt.title("Feature Correlations")
+plt.show()
+
+# Feature engineering
+dataset['quality_label'] = dataset['quality'].apply(lambda x: 'low' if x <= 5 else 'medium' if x <= 7 else 'high')
+dataset['quality_label'] = pd.Categorical(dataset['quality_label'], categories=['low', 'medium', 'high'])
+
+# Select features and target
+features = dataset.columns[:-2]
+target = ['quality_label']
+
+X = dataset[features]
+y = dataset[target]
+
+# Split the dataset into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Train a random forest classifier
+classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+classifier.fit(X_train, y_train.values.ravel())
+
+# Make predictions using the test set
+y_pred = classifier.predict(X_test)
+
+# Evaluate the model
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("Accuracy Score:", accuracy_score(y_test, y_pred))
