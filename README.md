@@ -1,5 +1,5 @@
 # WinePhysicochemicalProperties
-physicochemical properties and quality ratings for wines pulled from UCI dataset. 
+Physicochemical properties and quality ratings for wines pulled from UCI dataset. 
 
 This project we:
 Load the wine quality dataset from the UCI Machine Learning Repository.
